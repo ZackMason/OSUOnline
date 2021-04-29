@@ -1,3 +1,19 @@
+'''
+###############################################################################
+Server.py
+
+Description:
+    The backend for the website
+
+Notes:
+    The port is specified using the environment variable PORT
+    The host is specified using the environment variable LOCAL
+
+###############################################################################
+'''
+
+import os
+
 from flask import Flask, redirect, url_for, render_template
 from connection import connect
 
