@@ -19,15 +19,31 @@ from connection import connect
 
 app = Flask(__name__)
 
-@app.route('/')
-def home_page():
-    res = ""
-      
-    return render_template("homepage.html", content=res)
+@app.route('/players')
+def players():
+    return render_template("players.html")
 
-@app.route('/login/<name>')
+@app.route('/quests')
+def quests():
+    return render_template("quests.html")
+
+@app.route('/items')
+def items():
+    return render_template("items.html")
+
+@app.route('/npcs')
+def npcs():
+    return render_template("npcs.html")
+
+@app.route('/player/<name>')
 def login(name=None):
     return "Hello %s, how are you?" % name
+
+@app.route('/')
+@app.route('/homepage')
+@app.route('/home')
+def home_page():
+    return render_template("homepage.html")
 
 if __name__ == '__main__':
     local = bool(os.environ.get('LOCAL', True))

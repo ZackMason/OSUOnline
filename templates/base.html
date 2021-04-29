@@ -1,0 +1,53 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}}</title>
+        {% else %}
+        <title>OSU Online</title>
+        {% endif %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class='navbar'>
+            <div class='Home'>
+                <a href="{{ url_for('home_page') }}">
+                    Home
+                </a>
+            </div>
+            <div class='Players'>
+                <a href="{{ url_for('players') }}">
+                    Players
+                </a>
+            </div>
+            <div class='Items'>
+                <a href="{{ url_for('items') }}">
+                    Items
+                </a>
+            </div>
+            <div class='Quests'>
+                <a href="{{ url_for('quests') }}">
+                    Quests
+                </a>
+            </div>
+            <div class='NPCs'>
+                <a href="{{ url_for('npcs') }}">
+                    NPCs
+                </a>
+            </div>
+        </div>
+        
+        <div id='main'>
+            <nav>
+                <h3>
+                    Edit Controls
+                </h3>
+                {% block options %}{% endblock %}
+            </nav>
+            
+            <div class='content'>
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+            
+        </body>
+        </html>
