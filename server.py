@@ -116,16 +116,13 @@ def maps():
     attributes, entities = get_fake_maps()
     return render_template('maps.html', title='Maps', attributes=attributes, results=entities)
 
+@app.route('/')
+@app.route('/home')
+@app.route('/homepage')
 @app.route('/dashboard')
 def dashboard():
     attributes, entities = get_fake_entities()
     return render_template('dashboard.html', attributes=attributes, results=entities)
-
-@app.route('/')
-@app.route('/homepage')
-@app.route('/home')
-def home_page():
-    return render_template("homepage.html")
 
 if __name__ == '__main__':
     local = bool(os.environ.get('LOCAL', True))
