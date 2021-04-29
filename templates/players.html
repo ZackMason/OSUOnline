@@ -1,9 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'dashboard.html' %}
 
-{% block options %}
-
-{% endblock %}
-
-{% block content %}
-    <p>Here you can edit players</p>
+{% block viewport %}
+<form class="viewportForm">
+    <div class="viewportRow">
+        <label for="pName">Player Name:</label>
+        <input type="text" id="pName" name="pName">
+    </div>
+    <div class="viewportRow">
+        <label for="pDesc">Description:</label>
+        <input type="text" id="pDesc" name="pDesc">
+    </div>
+    <div class="viewportRow">
+        <label for="pLevel">Level:</label>
+        <input type="text" id="pLevel" name="pLevel">
+    </div>
+    <div class="viewportRow">
+        <label for="pExp">Experience:</label>
+        <input type="text" id="pExp" name="pExp">
+    </div>
+        <input type="button" id="addButton" name="addButton" value="Add new Player">
+</form>
 {% endblock %}

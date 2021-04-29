@@ -1,9 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'dashboard.html' %}
 
-{% block options %}
-
-{% endblock %}
-
-{% block content %}
-    <p>Here you can edit npcs</p>
+{% block viewport %}
+<form class="viewportForm">
+    <div class="viewportRow">
+        <label for="nName">NPC Name:</label>
+        <input type="text" id="nName" name="nName">
+    </div>
+    <div class="viewportRow">
+        <label for="nDesc">Description:</label>
+        <input type="text" id="nDesc" name="nDesc">
+    </div>
+    <div class="viewportRow">
+        <label for="nLevel">Level:</label>
+        <input type="text" id="nLevel" name="nLevel">
+    </div>
+    <div class="viewportRow">
+        <label for="nFaction">Faction:</label>
+        <input type="text" id="nFaction" name="nFaction">
+    </div>
+        <input type="button" id="addButton" name="addButton" value="Add new Player">
+</form>
 {% endblock %}
