@@ -1,9 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'dashboard.html' %}
 
-{% block options %}
-
-{% endblock %}
-
-{% block content %}
-    <p>Here you can edit items</p>
+{% block viewport %}
+<form class="viewportForm">
+    <div class="viewportRow">
+        <label for="iName">Item Name:</label>
+        <input type="text" id="iName" name="iName">
+    </div>
+    <div class="viewportRow">
+        <label for="iDesc">Description:</label>
+        <input type="text" id="iDesc" name="iDesc">
+    </div>
+    <div class="viewportRow">
+        <label for="iQuality">Quality:</label>
+        <input type="text" id="iQuality" name="iQuality">
+    </div>
+    <div class="viewportRow">
+        <label for="iSprite">Sprite:</label>
+        <input type="text" id="iSprite" name="iSprite">
+    </div>
+        <input type="button" id="addButton" name="addButton" value="Add new Item">
+</form>
 {% endblock %}
