@@ -1,7 +1,7 @@
 {% extends 'dashboard.html' %}
 
 {% block viewport %}
-<form class="viewportForm">
+<form class="viewportForm" method="post">
     <div class="viewportRow">
         <label for="pName">Player Name:</label>
         <input type="text" id="pName" name="pName">
@@ -18,6 +18,6 @@
         <label for="pExp">Experience:</label>
         <input type="text" id="pExp" name="pExp">
     </div>
-        <input type="button" id="addButton" name="addButton" value="Add new Player">
+        <input type="submit" id="addButton" name="addButton" value="Add new Player">
 </form>
 {% endblock %}

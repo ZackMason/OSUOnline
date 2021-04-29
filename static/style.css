@@ -66,3 +66,32 @@ body {
 .navbar, a{
     color:wheat;
 }
+
+.deleteRowContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.deleteRow{
+    height: 26px;
+    width: 26px;
+    background-color: rgb(255, 61, 35);
+    border-radius: 4px;
+    border: none;
+    vertical-align: center;
+}
+
+.updateRowContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.updateRow{
+    height: 26px;
+    width: 26px;
+    background-color: rgb(35, 193, 255);
+    border-radius: 4px;
+    border: none;
+    vertical-align: center;
+}
+

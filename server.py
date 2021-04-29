@@ -14,12 +14,15 @@ Notes:
 
 import os
 
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, request, flash
 from connection import connect
 
 import os
 from random import *
 import string
+
+import secrets
+secret_key = secrets.token_hex(16)
 
 def get_fake_entities():
     attributes = ['ID', 'name', 'description']
@@ -91,29 +94,61 @@ def get_fake_npcs():
 
 app = Flask(__name__)
 
-@app.route('/players')
+app.config['SECRET_KEY'] = secret_key
+
+
+@app.route('/players', methods=['GET', 'POST'])
 def players():
     attributes, entities = get_fake_players()
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+    
     return render_template('players.html', title='Players', attributes=attributes, results=entities)
 
 @app.route('/quests')
 def quests():
     attributes, entities = get_fake_quests()
+    
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
     return render_template('quests.html', title='Quests', attributes=attributes, results=entities)
 
 @app.route('/items')
 def items():
     attributes, entities = get_fake_items()
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
     return render_template('items.html', title='Items', attributes=attributes, results=entities)
 
 @app.route('/npcs')
 def npcs():
     attributes, entities = get_fake_npcs()
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
     return render_template('npcs.html', title='NPCs', attributes=attributes, results=entities)
 
 @app.route('/maps')
 def maps():
     attributes, entities = get_fake_maps()
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+    
     return render_template('maps.html', title='Maps', attributes=attributes, results=entities)
 
 @app.route('/')
