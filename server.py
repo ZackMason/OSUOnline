@@ -1,3 +1,19 @@
+'''
+###############################################################################
+Server.py
+
+Description:
+    The backend for the website
+
+Notes:
+    The port is specified using the environment variable PORT
+    The host is specified using the environment variable LOCAL
+
+###############################################################################
+'''
+
+import os
+
 from flask import Flask, redirect, url_for, render_template
 from connection import connect
 
@@ -30,7 +46,6 @@ def home_page():
     return render_template("homepage.html")
 
 if __name__ == '__main__':
-    app.run(host=HOST, port=PORT)
     local = bool(os.environ.get('LOCAL', True))
 
     PORT = int(os.environ.get('PORT', 18345))

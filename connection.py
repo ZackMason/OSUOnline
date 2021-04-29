@@ -1,9 +1,8 @@
 import pymysql
 
-def connect():
+def connect(usr, pswd, db):
     return pymysql.connect(host='classmysql.engr.oregonstate.edu',
-        user='cs340_masonblz',
-        password='4022',
-        database='cs340_masonblz',
+        user=usr,
+        password=pswd,
+        database=db,
         cursorclass=pymysql.cursors.DictCursor)
-
