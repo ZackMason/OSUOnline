@@ -1,0 +1,15 @@
+{% extends 'dashboard.html' %}
+
+{% block viewport %}
+<form class="viewportForm">
+    <div class="viewportRow">
+        <label for="pid">{{ attributes[0] }}:</label>
+        <input type="text" id="pid" name="pid">
+    </div>
+    <div class="viewportRow">
+        <label for="itemID">{{ attributes[1] }}:</label>
+        <input type="text" id="itemID" name="itemID">
+    </div>
+        <input type="submit" id="addButton" name="addButton" value="Add new Row">
+</form>
+{% endblock %}
