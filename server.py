@@ -151,6 +151,61 @@ def maps():
     
     return render_template('maps.html', title='Maps', attributes=attributes, results=entities)
 
+
+@app.route('/player_inventory')
+def player_inventory():
+    attributes = ['pid', 'ItemID'] 
+    entities = [ {'pid': randrange(0,100), 'ItemID': randrange(0,100)} for i in range(20)] 
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
+    return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities)
+
+
+@app.route('/player_quests')
+def player_quests():
+    attributes = ['pid', 'qid'] 
+    entities = [ {'pid': randrange(0,100), 'qid': randrange(0,100)} for i in range(20)] 
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
+    return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities)
+
+@app.route('/npc_droptable')
+def npc_droptable():
+    attributes = ['pid', 'ItemID'] 
+    entities = [ {'pid': randrange(0,100), 'ItemID': randrange(0,100)} for i in range(20)] 
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
+    return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities)
+
+@app.route('/npc_spawned')
+def npc_spawned():
+    attributes = ['pid', 'mid'] 
+    entities = [ {'pid': randrange(0,100), 'mid': randrange(0,100)} for i in range(20)] 
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
+    return render_template('player_inventory.html', title='NPCs Spawned', attributes=attributes, results=entities)
+
+
+
+
+
+
 @app.route('/')
 @app.route('/home')
 @app.route('/homepage')
