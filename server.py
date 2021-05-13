@@ -133,12 +133,16 @@ app.config['SECRET_KEY'] = secret_key
 def handle_post_request(request, table = 'df', values = 'df'):
     if request.method == 'POST':
         # implement insert here
+        print('Post request %s' % str(request.form))
+
         if not request.form.get('query_type'):
             query = "INSERT INTO %s VALUES %s" % (table, values)
             flash('Post request %s' % str(request.form))
-        elif request.form.query_type == 'UPDATE':
+        elif request.form.get('query_type') == 'UPDATE':
+            print('update recieved')
             flash('Update request: %s ' % str(request.form))
-        elif request.form.query_type == 'DELETE':
+        elif request.form.get('query_type') == 'DELETE':
+            print('delete recieved')
             flash('Delete request: %s ' % str(request.form))
 
 @app.route('/players', methods=['GET', 'POST'])
@@ -150,7 +154,7 @@ def players():
     return render_template('players.html', title='Players', attributes=attributes, results=entities)
 
 
-@app.route('/quests')
+@app.route('/quests', methods=['GET', 'POST'])
 def quests():
     attributes, entities = get_quests()
 
@@ -158,7 +162,7 @@ def quests():
     return render_template('quests.html', title='Quests', attributes=attributes, results=entities)
 
 
-@app.route('/items')
+@app.route('/items', methods=['GET', 'POST'])
 def items():
     attributes, entities = get_items()
 
@@ -167,7 +171,7 @@ def items():
     return render_template('items.html', title='Items', attributes=attributes, results=entities)
 
 
-@app.route('/npcs')
+@app.route('/npcs', methods=['GET', 'POST'])
 def npcs():
     attributes, entities = get_npcs()
 
@@ -176,7 +180,7 @@ def npcs():
     return render_template('npcs.html', title='NPCs', attributes=attributes, results=entities)
 
 
-@app.route('/maps')
+@app.route('/maps', methods=['GET', 'POST'])
 def maps():
     attributes, entities = get_maps()
 
@@ -185,7 +189,7 @@ def maps():
     return render_template('maps.html', title='Maps', attributes=attributes, results=entities)
 
 
-@app.route('/player_inventory')
+@app.route('/player_inventory', methods=['GET', 'POST'])
 def player_inventory():
     attributes = ['pid', 'ItemID']
     entities = [{'pid': randrange(0, 100), 'ItemID': randrange(0, 100)} for i in range(20)]
@@ -195,7 +199,7 @@ def player_inventory():
     return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities)
 
 
-@app.route('/player_quests')
+@app.route('/player_quests', methods=['GET', 'POST'])
 def player_quests():
     attributes = ['pid', 'qid']
     entities = [{'pid': randrange(0, 100), 'qid': randrange(0, 100)} for i in range(20)]
@@ -205,7 +209,7 @@ def player_quests():
     return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities)
 
 
-@app.route('/npc_droptable')
+@app.route('/npc_droptable', methods=['GET', 'POST'])
 def npc_droptable():
     attributes = ['pid', 'ItemID']
     entities = [{'pid': randrange(0, 100), 'ItemID': randrange(0, 100)} for i in range(20)]
@@ -215,7 +219,7 @@ def npc_droptable():
     return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities)
 
 
-@app.route('/npc_spawned')
+@app.route('/npc_spawned', methods=['GET', 'POST'])
 def npc_spawned():
     attributes = ['pid', 'mid']
     entities = [{'pid': randrange(0, 100), 'mid': randrange(0, 100)} for i in range(20)]
@@ -225,10 +229,10 @@ def npc_spawned():
     return render_template('player_inventory.html', title='NPCs Spawned', attributes=attributes, results=entities)
 
 
-@app.route('/')
-@app.route('/home')
-@app.route('/homepage')
-@app.route('/dashboard')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
+@app.route('/homepage', methods=['GET', 'POST'])
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     attributes, entities = get_entities()
     return render_template('dashboard.html', attributes=attributes, results=entities)

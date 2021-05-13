@@ -8,12 +8,18 @@ let update_btns = document.querySelectorAll(".updateRow");
 
 delete_btns.forEach(btn => {
     btn.addEventListener('click', event => {
-        alert("Deleting entity #" + btn.id + "......")
+        $.post(window.location.pathname, {
+            id:btn.id, 
+            query_type:"DELETE"
+        })    
     })
 })
 
 update_btns.forEach(btn => {
     btn.addEventListener('click', event => {
-        alert("Updating entity #" + btn.id + "......")
+       $.post(window.location.pathname, {
+               id:btn.id, 
+               query_type:"UPDATE"
+       })      
     })
 })
