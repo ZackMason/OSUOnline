@@ -2,22 +2,13 @@
 
 {% block viewport %}
 <form class="viewportForm" method="post">
+    {% for attr in form_attributes %}
     <div class="viewportRow">
-        <label for="pName">Player Name:</label>
-        <input type="text" id="pName" name="pName">
+        <label for="{{attr}}">{{attr}}:</label>
+        <input type="text" id="{{attr}}" name="{{attr}}">
     </div>
-    <div class="viewportRow">
-        <label for="pDesc">Description:</label>
-        <input type="text" id="pDesc" name="pDesc">
-    </div>
-    <div class="viewportRow">
-        <label for="pLevel">Level:</label>
-        <input type="text" id="pLevel" name="pLevel">
-    </div>
-    <div class="viewportRow">
-        <label for="pExp">Experience:</label>
-        <input type="text" id="pExp" name="pExp">
-    </div>
-        <input type="submit" id="addButton" name="addButton" value="Add new Player">
+    {% endfor %}
+
+    <input type="submit" id="addButton" name="addButton" value="Add new Player">
 </form>
 {% endblock %}

@@ -43,7 +43,7 @@ def get_entities():
 
 
 def get_players():
-    attributes = ['ID', 'name', 'description', 'email', 'level', 'experience', 'health', 'current_map']
+    attributes = ['name', 'health', 'email', 'level', 'experience', 'health', 'current_map']
     query = "SELECT * FROM player;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -62,7 +62,7 @@ def get_players():
 
 
 def get_quests():
-    attributes = ['ID', 'name', 'description', 'experience_reward']
+    attributes = ['quest_id', 'name', 'description', 'experience_reward']
     query = "SELECT * FROM quest;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -78,7 +78,7 @@ def get_quests():
 
 
 def get_items():
-    attributes = ['ID', 'name', 'description', 'quality', 'sprite']
+    attributes = ['item_id', 'name', 'description', 'quality', 'sprite']
     query = "SELECT * FROM items;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -95,7 +95,7 @@ def get_items():
 
 
 def get_maps():
-    attributes = ['ID', 'name', 'description', 'sprite']
+    attributes = ['map_id', 'name', 'sprite']
     query = "SELECT * FROM map;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -104,14 +104,13 @@ def get_maps():
             entities = [{
                 'ID': res[i]["map_id"],
                 'name': res[i]["name"],
-                'description': None,
                 'sprite': res[i]["map_sprite"] + '.png',
             } for i in range(len(res))]
             return attributes, entities
 
 
 def get_npcs():
-    attributes = ['ID', 'name', 'description', 'faction']
+    attributes = ['npc_id', 'name', 'description', 'faction']
     query = "SELECT * FROM npc;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -130,13 +129,20 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = secret_key
 
-def handle_post_request(request, table = 'df', values = 'df'):
+def handle_post_request(request, table = 'df', attr = 'df'):
     if request.method == 'POST':
-        # implement insert here
-        print('Post request %s' % str(request.form))
-
+        print('post recieved')
         if not request.form.get('query_type'):
-            query = "INSERT INTO %s VALUES %s" % (table, values)
+            table_token = '%s %s' % (table, tuple(attr))
+            table_token = table_token.replace("'",'')
+            data = [request.form.get(a) for a in attr]
+            values_token = '%s' % data
+            values_token = values_token.replace("'",'').replace('[', '(').replace(']', ')')
+            if '' in data:
+                print('empty field')
+            else:
+                query = "INSERT INTO %s VALUES %s" % (table_token, values_token)
+                print(query)
             flash('Post request %s' % str(request.form))
         elif request.form.get('query_type') == 'UPDATE':
             print('update recieved')
@@ -149,44 +155,44 @@ def handle_post_request(request, table = 'df', values = 'df'):
 def players():
     attributes, entities = get_players()
 
-    handle_post_request(request)
+    handle_post_request(request, table='player', attr=attributes)
 
-    return render_template('players.html', title='Players', attributes=attributes, results=entities)
+    return render_template('players.html', title='Players', attributes=attributes, results=entities, form_attributes=attributes)
 
 
 @app.route('/quests', methods=['GET', 'POST'])
 def quests():
     attributes, entities = get_quests()
 
-    handle_post_request(request)
-    return render_template('quests.html', title='Quests', attributes=attributes, results=entities)
+    handle_post_request(request, table='quest', attr=attributes )
+    return render_template('quests.html', title='Quests', attributes=attributes, results=entities, form_attributes=attributes)
 
 
 @app.route('/items', methods=['GET', 'POST'])
 def items():
     attributes, entities = get_items()
 
-    handle_post_request(request)
+    handle_post_request(request, table='items', attr=attributes )
 
-    return render_template('items.html', title='Items', attributes=attributes, results=entities)
+    return render_template('items.html', title='Items', attributes=attributes, results=entities, form_attributes=attributes)
 
 
 @app.route('/npcs', methods=['GET', 'POST'])
 def npcs():
     attributes, entities = get_npcs()
 
-    handle_post_request(request)
+    handle_post_request(request, table='npc', attr=attributes )
 
-    return render_template('npcs.html', title='NPCs', attributes=attributes, results=entities)
+    return render_template('npcs.html', title='NPCs', attributes=attributes, results=entities, form_attributes=attributes)
 
 
 @app.route('/maps', methods=['GET', 'POST'])
 def maps():
     attributes, entities = get_maps()
 
-    handle_post_request(request)
+    handle_post_request(request, table='map', attr=attributes )
 
-    return render_template('maps.html', title='Maps', attributes=attributes, results=entities)
+    return render_template('maps.html', title='Maps', attributes=attributes, results=entities, form_attributes=attributes)
 
 
 @app.route('/player_inventory', methods=['GET', 'POST'])

@@ -19,7 +19,8 @@ update_btns.forEach(btn => {
     btn.addEventListener('click', event => {
        $.post(window.location.pathname, {
                id:btn.id, 
-               query_type:"UPDATE"
+               query_type:"UPDATE",
+               url:window.location.pathname
        })      
     })
 })
