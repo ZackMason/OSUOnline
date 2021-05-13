@@ -247,5 +247,9 @@ if __name__ == '__main__':
 
     PORT = int(os.environ.get('PORT', 18345))
     HOST = '127.0.0.1' if local else '0.0.0.0'
-    connection = connect.connect('your login', 'your_password', 'login_again')
+    login_name = str(os.environ.get('LOGIN', 'your_login'))
+    login_pswd = str(os.environ.get('DB_PASS', 'your_password'))
+    login_db = str(os.environ.get('DATABASE', 'login_again'))
+
+    connection = connect.connect(login_name, login_pswd, login_db)
     app.run(host=HOST, port=PORT)
