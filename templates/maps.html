@@ -1,19 +1,14 @@
 {% extends 'dashboard.html' %}
 
 {% block viewport %}
-<form class="viewportForm">
+<form class="viewportForm" method="post">
+    {% for attr in form_attributes %}
     <div class="viewportRow">
-        <label for="mName">Map Name:</label>
-        <input type="text" id="mName" name="mName">
+        <label for="{{attr}}">{{attr}}:</label>
+        <input type="text" id="{{attr}}" name="{{attr}}">
     </div>
-    <div class="viewportRow">
-        <label for="mDesc">Description:</label>
-        <input type="text" id="mDesc" name="mDesc">
-    </div>
-    <div class="viewportRow">
-        <label for="mSprite">Sprite:</label>
-        <input type="text" id="mSprite" name="mSprite">
-    </div>
-        <input type="submit" id="addButton" name="addButton" value="Add new Quest">
+    {% endfor %}
+
+    <input type="submit" id="addButton" name="addButton" value="Add new Player">
 </form>
 {% endblock %}
