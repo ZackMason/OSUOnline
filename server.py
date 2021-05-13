@@ -130,11 +130,16 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = secret_key
 
-def handle_post_request(request, table = '', values = ''):
+def handle_post_request(request, table = 'df', values = 'df'):
     if request.method == 'POST':
         # implement insert here
-        query = "INSERT INTO %s VALUES %s" % [table, values]
-        flash('Post request %s' % str(request.form))
+        if not request.form.get('query_type'):
+            query = "INSERT INTO %s VALUES %s" % (table, values)
+            flash('Post request %s' % str(request.form))
+        elif request.form.query_type == 'UPDATE':
+            flash('Update request: %s ' % str(request.form))
+        elif request.form.query_type == 'DELETE':
+            flash('Delete request: %s ' % str(request.form))
 
 @app.route('/players', methods=['GET', 'POST'])
 def players():
