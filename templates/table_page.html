@@ -5,10 +5,10 @@
     {% for attr in form_attributes %}
     <div class="viewportRow">
         <label for="{{attr}}">{{attr}}:</label>
-        <input type="text" id="{{attr}}" name="{{attr}}">
+        <input class='form_input' type="text" id="{{attr}}" name="{{attr}}">
     </div>
     {% endfor %}
 
-    <input type="submit" id="addButton" name="addButton" value="Add new Player">
+            <input type="submit" id="addButton" name="addButton" value="Add new {{title}}">
 </form>
 {% endblock %}

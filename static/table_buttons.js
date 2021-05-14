@@ -17,10 +17,18 @@ delete_btns.forEach(btn => {
 
 update_btns.forEach(btn => {
     btn.addEventListener('click', event => {
+        fields = document.querySelectorAll('.form_input');
+        data = {}
+        for (var i = 0; i < fields.length; i++)
+        {
+            data[fields[i].name] = (fields[i].value)
+        }
+        console.log(data)
+            
        $.post(window.location.pathname, {
                id:btn.id, 
                query_type:"UPDATE",
-               url:window.location.pathname
+               data: JSON.stringify(data)
        })      
     })
 })

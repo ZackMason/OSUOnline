@@ -14,7 +14,6 @@ Notes:
 
 from flask import Flask, redirect, url_for, render_template, request, flash, json
 from connection import *
-from dotenv import load_dotenv, find_dotenv
 
 import os
 from random import *
@@ -23,7 +22,6 @@ import string
 import secrets
 
 secret_key = secrets.token_hex(16)
-load_dotenv('./.env')
 login_name = str(os.environ.get('LOGIN', 'your_login'))
 login_pswd = str(os.environ.get('DB_PASS', 'your_password'))
 login_db = str(os.environ.get('DATABASE', 'login_again'))
@@ -45,7 +43,7 @@ def get_entities():
 
 
 def get_players():
-    attributes = ['name', 'health', 'email', 'level', 'experience', 'health', 'current_map']
+    attributes = ['name', 'health', 'email', 'level', 'experience', 'current_map']
     query = "SELECT * FROM player;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -64,7 +62,7 @@ def get_players():
 
 
 def get_quests():
-    attributes = ['quest_id', 'name', 'description', 'experience_reward']
+    attributes = ['name', 'description', 'experience_reward']
     query = "SELECT * FROM quest;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -80,7 +78,7 @@ def get_quests():
 
 
 def get_items():
-    attributes = ['item_id', 'name', 'description', 'quality', 'sprite']
+    attributes = ['name', 'description', 'quality', 'sprite']
     query = "SELECT * FROM items;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -97,7 +95,7 @@ def get_items():
 
 
 def get_maps():
-    attributes = ['map_id', 'name', 'sprite']
+    attributes = ['name', 'sprite']
     query = "SELECT * FROM map;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -112,7 +110,7 @@ def get_maps():
 
 
 def get_npcs():
-    attributes = ['npc_id', 'name', 'description', 'faction']
+    attributes = [ 'name', 'description', 'faction']
     query = "SELECT * FROM npc;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -140,20 +138,38 @@ def handle_post_request(request, table='df', attr='df', id=None):
             table_token = table_token.replace("'", '')
             data = [request.form.get(a) for a in attr]
             values_token = '%s' % data
-            values_token = values_token.replace("'", '').replace('[', '(').replace(']', ')')
+            values_token = values_token.replace("", '').replace('[', '(').replace(']', ')')
             if '' in data:
                 print('empty field')
             else:
-                query = "INSERT INTO %s VALUES %s" % (table_token, values_token)
-                print(query)
+                query = "INSERT INTO %s VALUES %s;" % (table_token, values_token)
+                with connect(login_name, login_pswd, login_db) as connection:
+                    with execute_query(connection, query) as cursor:
+                        pass
             flash('Post request %s' % str(request.form))
         elif request.form.get('query_type') == 'UPDATE':
-            print('update recieved')
+            query = 'UPDATE %s SET %s WHERE %s=%s'
+            data = json.loads(request.form.get('data'))
+            set_query = ''
+            first = True
+            for key, val in data.items():
+                if val == '': continue
+                if not first:
+                    set_query += ', '
+                set_query += "%s='%s'" % (key, val) 
+                first = False
+            query = query % (table, set_query, id, request.form.get('id'))
+            with connect(login_name, login_pswd, login_db) as connection:
+                with execute_query(connection, query) as cursor:
+                    pass
             flash('Update request: %s ' % str(request.form))
         elif request.form.get('query_type') == 'DELETE':
             print('delete recieved')
-            query = "DELETE FROM %s WHERE %s == %s;" % (table, id, request.form.get('id'))
+            query = "DELETE FROM %s WHERE %s=%s;" % (table, id, request.form.get('id'))
             print(query)
+            with connect(login_name, login_pswd, login_db) as connection:
+                with execute_query(connection, query) as cursor:
+                    pass 
 
 
 @app.route('/players', methods=['GET', 'POST'])
@@ -162,7 +178,7 @@ def players():
 
     handle_post_request(request, table='player', attr=attributes, id='player_id')
 
-    return render_template('players.html', title='Players', attributes=attributes, results=entities,
+    return render_template('table_page.html', title='Players', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
 
@@ -171,7 +187,7 @@ def quests():
     attributes, entities = get_quests()
 
     handle_post_request(request, table='quest', attr=attributes, id='quest_id')
-    return render_template('quests.html', title='Quests', attributes=attributes, results=entities,
+    return render_template('table_page.html', title='Quests', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
 
@@ -181,7 +197,7 @@ def items():
 
     handle_post_request(request, table='items', attr=attributes, id='item_id')
 
-    return render_template('items.html', title='Items', attributes=attributes, results=entities,
+    return render_template('table_page.html', title='Items', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
 
@@ -191,7 +207,7 @@ def npcs():
 
     handle_post_request(request, table='npc', attr=attributes, id='npc_id')
 
-    return render_template('npcs.html', title='NPCs', attributes=attributes, results=entities,
+    return render_template('table_page.html', title='NPCs', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
 
@@ -201,7 +217,7 @@ def maps():
 
     handle_post_request(request, table='map', attr=attributes, id='map_id')
 
-    return render_template('maps.html', title='Maps', attributes=attributes, results=entities,
+    return render_template('table_page.html', title='Maps', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
 
