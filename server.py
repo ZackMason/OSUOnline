@@ -95,7 +95,7 @@ def get_items():
 
 
 def get_maps():
-    attributes = ['name', 'sprite']
+    attributes = ['name', 'map_sprite']
     query = "SELECT * FROM map;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
