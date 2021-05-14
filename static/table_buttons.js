@@ -29,6 +29,11 @@ update_btns.forEach(btn => {
                id:btn.id, 
                query_type:"UPDATE",
                data: JSON.stringify(data)
-       })      
+       })    
+       
     })
 })
+
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+    } 
