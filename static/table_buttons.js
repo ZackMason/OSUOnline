@@ -24,13 +24,21 @@ update_btns.forEach(btn => {
             data[fields[i].name] = (fields[i].value)
         }
         console.log(data)
-            
-       $.post(window.location.pathname, {
-               id:btn.id, 
-               query_type:"UPDATE",
-               data: JSON.stringify(data)
-       })    
        
+        $.post(window.location.pathname, {
+            id:btn.id, 
+            query_type:"UPDATE",
+            data: JSON.stringify(data)
+        }) 
+        
+        /*
+        fetch(window.location.pathname, {
+            method: "POST", 
+            body: JSON.stringify(data)
+        }).then(res => {
+            window.location.reload(true); 
+        });
+            */
     })
 })
 

@@ -221,7 +221,7 @@ def maps():
                            form_attributes=attributes)
 
 
-@app.route('/player_inventory')
+@app.route('/player_inventory', methods=['GET', 'POST'])
 def player_inventory():
     attributes = ['pid', 'ItemID']
     query = "SELECT * FROM player_inventory;"
@@ -238,10 +238,10 @@ def player_inventory():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities)
+    return render_template('table_page.html', title='Player Inventory', attributes=attributes, results=entities,form_attributes=attributes)
 
 
-@app.route('/player_quests')
+@app.route('/player_quests', methods=['GET', 'POST'])
 def player_quests():
     attributes = ['pid', 'qid']
     query = "SELECT * FROM player_active_quests;"
@@ -258,10 +258,10 @@ def player_quests():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities)
+    return render_template('table_page.html', title='Player Quests', attributes=attributes, results=entities,form_attributes=attributes)
 
 
-@app.route('/npc_droptable')
+@app.route('/npc_droptable', methods=['GET', 'POST'])
 def npc_droptable():
     attributes = ['pid', 'ItemID']
     query = "SELECT * FROM npc_drop_table;"
@@ -279,10 +279,10 @@ def npc_droptable():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities)
+    return render_template('table_page.html', title='NPC Drop Table', attributes=attributes, results=entities,form_attributes=attributes)
 
 
-@app.route('/npc_spawned')
+@app.route('/npc_spawned', methods=['GET', 'POST'])
 def npc_spawned():
     attributes = ['pid', 'mid']
     query = "SELECT * FROM spawned_npc;"
@@ -299,7 +299,7 @@ def npc_spawned():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='NPCs Spawned', attributes=attributes, results=entities)
+    return render_template('table_page.html', title='NPCs Spawned', attributes=attributes, results=entities,form_attributes=attributes)
 
 
 @app.route('/', methods=['GET', 'POST'])
