@@ -186,7 +186,7 @@ def handle_post_request(request, table='df', attr='df', id=None):
                 print('empty field')
             else:
                 query = "INSERT INTO %s VALUES %s;" % (table_token, values_token)
-                query = query.replace("'*", '').replace("*'",'')
+                query = query.replace("'*", '').replace("*'", '')
                 with connect(login_name, login_pswd, login_db) as connection:
                     with execute_query(connection, query) as cursor:
                         pass
@@ -216,6 +216,13 @@ def handle_post_request(request, table='df', attr='df', id=None):
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
                     pass
+
+
+def find_name(list, id, id_name):
+    for i in range(len(list)):
+        if list[i][id_name] == id:
+            return list[i]['name']
+    return None
 
 
 @app.route('/players', methods=['GET', 'POST'])
@@ -254,7 +261,7 @@ def items():
 @app.route('/npcs', methods=['GET', 'POST'])
 def npcs():
     attributes, entities = get_npcs()
-    handle_post_request(request, table='table_page.html', attr=attributes, id='npc_id')
+    handle_post_request(request, table='npc', attr=attributes, id='npc_id')
     attributes, entities = get_npcs()
     return render_template('table_page.html', title='NPCs', attributes=attributes, results=entities,
                            form_attributes=attributes)
@@ -271,14 +278,27 @@ def maps():
 
 @app.route('/player_inventory')
 def player_inventory():
-    attributes = ['pid', 'ItemID']
+    attributes = ['player_id', 'item_id']
+    names = ['name1', 'name2']
     query = "SELECT * FROM player_inventory;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
-            results = json.dumps(cursor.fetchall())
-            res = json.loads(results)
-            entities = [{'pid': res[i]["player_id"],
-                         'ItemID': res[i]["item_id"]
+            query = 'SELECT player_id, name from player;'
+            with execute_query(connection, query) as cursor:
+                    results = json.dumps(cursor.fetchall())
+                    players = json.loads(results)
+            query = 'SELECT item_id, name from items;'
+            with execute_query(connection, query) as cursor:
+                    results = json.dumps(cursor.fetchall())
+                    items = json.loads(results)
+            query = "SELECT * FROM player_inventory;"
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+            entities = [{'player_id': res[i]["player_id"],
+                         'item_id': res[i]["item_id"],
+                         'name1': find_name(players, res[i]["player_id"], "player_id"),
+                         'name2': find_name(items, res[i]["item_id"], "item_id")
                          } for i in range(len(res))]
 
     if request.method == 'POST':
@@ -286,7 +306,8 @@ def player_inventory():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities)
+    return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities,
+                           list1=players, list2=items, names=names)
 
 
 @app.route('/player_quests')
