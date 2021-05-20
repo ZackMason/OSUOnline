@@ -9,10 +9,18 @@
     </div>
     {% endfor %}
      <div class="viewportRow">
-        <label>current Map:</label>
-        <select name = 'current_map'>
-                {% for m in maps %}
-                    <option value="{{ m['map_id'] }}">{{ m['name'] }}</option>
+        <label>Item Reward:</label>
+        <select name = 'item_reward'>
+                {% for qi in q_items %}
+                    <option value="{{ qi['item_id'] }}">{{ qi['name'] }}</option>
+                {% endfor %}
+        </select><br>
+     </div>
+    <div class="viewportRow">
+        <label>Quest Giver:</label>
+        <select name = 'quest_giver'>
+                {% for qn in q_npcs %}
+                    <option value="{{ qn['npc_id'] }}">{{ qn['name'] }}</option>
                 {% endfor %}
         </select><br>
      </div>
@@ -68,10 +76,18 @@
                                         </div>
                                         {% endfor %}
                                          <div class="viewportRow">
-                                            <label>current Map:</label>
-                                            <select name = 'current_map' class = 'upd_input'>
-                                                    {% for m in maps %}
-                                                        <option value="{{ m['map_id'] }}">{{ m['name'] }}</option>
+                                            <label>Item Reward:</label>
+                                            <select name = 'item_reward' class = 'upd_input'>
+                                                    {% for qi in q_items %}
+                                                        <option value="{{ qi['item_id'] }}">{{ qi['name'] }}</option>
+                                                    {% endfor %}
+                                            </select><br>
+                                         </div>
+                                        <div class="viewportRow">
+                                            <label>Quest Giver:</label>
+                                            <select name = 'quest_giver' class = 'upd_input'>
+                                                    {% for qn in q_npcs %}
+                                                        <option value="{{ qn['npc_id'] }}">{{ qn['name'] }}</option>
                                                     {% endfor %}
                                             </select><br>
                                          </div>

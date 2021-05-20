@@ -31,7 +31,7 @@ sbt_btn.addEventListener('click', event => {
         data = {}
         for (var i = 0; i < fields.length; i++)
         {
-            data[fields[i].name] = (fields[i].value)
+                data[fields[i].name] = (fields[i].value)
         }
         console.log(data)
        $.post(window.location.pathname, {
@@ -54,7 +54,7 @@ sbt_btn.addEventListener('click', event => {
 update_btns.forEach(btn => {
     btn.addEventListener('click', event => {
         let sbt_btn = document.getElementById('submit_id');
-        sbt_btn.id = btn.id;
+            sbt_btn.id = btn.id;
     })
 })
 

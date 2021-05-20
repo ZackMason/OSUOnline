@@ -44,7 +44,9 @@ def get_entities():
 
 def get_players():
     attributes = ['name', 'health', 'email', 'level', 'experience', 'current_map']
+    form_attributes = ['name', 'health', 'email', 'level', 'experience']
     query = "SELECT * FROM player;"
+    maps = ['map_id', 'name']
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
             results = json.dumps(cursor.fetchall())
@@ -58,12 +60,19 @@ def get_players():
                 'experience': res[i]["experience"],
                 'current_map': res[i]["current_map"]
             } for i in range(0, len(res))]
-            return attributes, entities
+
+    query = 'SELECT map_id, name from map;'
+    with connect(login_name, login_pswd, login_db) as connection:
+        with execute_query(connection, query) as cursor:
+            results = json.dumps(cursor.fetchall())
+            maps = json.loads(results)
+    return attributes, entities, maps, form_attributes
 
 
 def get_quests():
-    attributes = ['name', 'description', 'experience_reward']
+    attributes = ['name', 'description', 'experience_reward', 'item_reward', 'quest_giver']
     query = "SELECT * FROM quest;"
+    form_attributes = ['name', 'description', 'experience_reward']
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
             results = json.dumps(cursor.fetchall())
@@ -73,8 +82,41 @@ def get_quests():
                 'name': res[i]["name"],
                 'description': res[i]["description"],
                 'experience_reward': res[i]["experience_reward"],
+                'item_reward': res[i]["item_reward"],
+                'quest_giver': res[i]["quest_giver"],
             } for i in range(len(res))]
-            return attributes, entities
+
+            query = 'SELECT item_id, name from items;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+                items_reward = [{
+                    'item_id': "*NULL*",
+                    'name': "NONE",
+                }]
+                for i in range(0, len(res)):
+                    item = {
+                        'item_id': res[i]["item_id"],
+                        'name': res[i]["name"]
+                    }
+                    items_reward.append(item)
+
+            query = 'SELECT npc_id, name from npc;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+                quest_giver = [{
+                    'npc_id': "*NULL*",
+                    'name': "NONE",
+                }]
+                for i in range(0, len(res)):
+                    item = {
+                        'npc_id': res[i]["npc_id"],
+                        'name': res[i]["name"]
+                    }
+                    quest_giver.append(item)
+
+            return attributes, entities, form_attributes, items_reward, quest_giver
 
 
 def get_items():
@@ -134,15 +176,17 @@ def handle_post_request(request, table='df', attr='df', id=None):
     if request.method == 'POST':
         print('post recieved')
         if not request.form.get('query_type'):
+            data = [request.form.get(a) for a in attr]
             table_token = '%s %s' % (table, tuple(attr))
             table_token = table_token.replace("'", '')
-            data = [request.form.get(a) for a in attr]
+
             values_token = '%s' % data
             values_token = values_token.replace("", '').replace('[', '(').replace(']', ')')
             if '' in data:
                 print('empty field')
             else:
                 query = "INSERT INTO %s VALUES %s;" % (table_token, values_token)
+                query = query.replace("'*", '').replace("*'",'')
                 with connect(login_name, login_pswd, login_db) as connection:
                     with execute_query(connection, query) as cursor:
                         pass
@@ -154,11 +198,13 @@ def handle_post_request(request, table='df', attr='df', id=None):
             first = True
             for key, val in data.items():
                 if val == '': continue
+                if val is None: continue
                 if not first:
                     set_query += ', '
-                set_query += "%s='%s'" % (key, val) 
+                set_query += "%s='%s'" % (key, val)
                 first = False
             query = query % (table, set_query, id, request.form.get('id'))
+            query = query.replace("'*", '').replace("*'", '')
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
                     pass
@@ -171,23 +217,29 @@ def handle_post_request(request, table='df', attr='df', id=None):
                 with execute_query(connection, query) as cursor:
                     pass
 
+
 @app.route('/players', methods=['GET', 'POST'])
 def players():
-    attributes, entities = get_players()
+    attributes, entities, map_results, form_attributes = get_players()
 
     handle_post_request(request, table='player', attr=attributes, id='player_id')
 
-    return render_template('table_page.html', title='Players', attributes=attributes, results=entities,
-                           form_attributes=attributes)
+    attributes, entities, map_results, form_attributes = get_players()
+
+    return render_template('players.html', title='Players', attributes=attributes, results=entities,
+                           form_attributes=form_attributes, maps=map_results)
 
 
 @app.route('/quests', methods=['GET', 'POST'])
 def quests():
-    attributes, entities = get_quests()
+    attributes, entities, form_attributes, q_items, q_npcs = get_quests()
 
     handle_post_request(request, table='quest', attr=attributes, id='quest_id')
-    return render_template('table_page.html', title='Quests', attributes=attributes, results=entities,
-                           form_attributes=attributes)
+
+    attributes, entities, form_attributes, q_items, q_npcs = get_quests()
+
+    return render_template('quests.html', title='Quests', attributes=attributes, results=entities,
+                           form_attributes=form_attributes, q_items=q_items, q_npcs=q_npcs)
 
 
 @app.route('/items', methods=['GET', 'POST'])
@@ -202,9 +254,8 @@ def items():
 @app.route('/npcs', methods=['GET', 'POST'])
 def npcs():
     attributes, entities = get_npcs()
-
     handle_post_request(request, table='table_page.html', attr=attributes, id='npc_id')
-
+    attributes, entities = get_npcs()
     return render_template('table_page.html', title='NPCs', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
@@ -212,9 +263,8 @@ def npcs():
 @app.route('/maps', methods=['GET', 'POST'])
 def maps():
     attributes, entities = get_maps()
-
     handle_post_request(request, table='map', attr=attributes, id='map_id')
-
+    attributes, entities = get_maps()
     return render_template('table_page.html', title='Maps', attributes=attributes, results=entities,
                            form_attributes=attributes)
 
@@ -315,4 +365,3 @@ if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 18347))
     HOST = '127.0.0.1' if local else '0.0.0.0'
     app.run(host=HOST, port=PORT)
-
