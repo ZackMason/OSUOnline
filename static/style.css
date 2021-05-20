@@ -32,6 +32,10 @@ body {
     margin: 3%;
 }
 
+.table_responsive{
+    width: 100%;
+}
+
 #addButton {
     background-color:rgb(89, 218, 250);
     color:white;
@@ -48,8 +52,7 @@ body {
 
 .content {
     margin:5px;
-    border-radius: 8px;
-    background-color: dimgrey;
+    border-radius: 4px;
     width: 100%;
 }
 
@@ -87,11 +90,10 @@ body {
 }
 
 .updateRow{
-    height: 26px;
-    width: 26px;
+    height: 30px;
+    width: 80px;
     background-color: rgb(35, 193, 255);
     border-radius: 4px;
     border: none;
     vertical-align: center;
 }
-

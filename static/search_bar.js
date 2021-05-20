@@ -1,5 +1,3 @@
-
-
 let search_bar = document.getElementsByClassName("form-control form-control-dark w-100")[0];
 
 var rows = [...document.querySelectorAll('tr')]

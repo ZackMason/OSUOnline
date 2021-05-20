@@ -5,10 +5,85 @@
     {% for attr in form_attributes %}
     <div class="viewportRow">
         <label for="{{attr}}">{{attr}}:</label>
-        <input type="text" id="{{attr}}" name="{{attr}}">
+        <input class='form_input' type="text" id="{{attr}}" name="{{attr}}">
     </div>
     {% endfor %}
-
-    <input type="submit" id="addButton" name="addButton" value="Add new Player">
+     <div class="viewportRow">
+        <label>current Map:</label>
+        <select name = 'current_map'>
+                {% for m in maps %}
+                    <option value="{{ m['map_id'] }}">{{ m['name'] }}</option>
+                {% endfor %}
+        </select><br>
+     </div>
+        <input type="submit" id="addButton" name="addButton" value="Add new {{title}}">
 </form>
+{% endblock %}
+
+{% block content %}
+    <h2>Results</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                {% for name in attributes %}
+                <th>{{name}}</th>
+                {% endfor %}
+                <th>update</th>
+                <th>delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entity in results %}
+                <tr id="{{entity.ID}}">
+                    {% for name in attributes %}
+                        <td id="{{entity.ID}}">{{entity.get(name)}}</td>
+                    {% endfor %}
+
+                    <td>
+                        <div class='updateRowContainer'>
+                            <button type="button" class="updateRow" data-bs-toggle="modal" data-bs-target="#exampleModal" id="{{entity.ID}}">^</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class='deleteRowContainer'>
+                            <input type="submit" class="deleteRow" value="x" id="{{entity.ID}}">
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Update {{title}}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body" id ="modal_id">
+                                      <form class="viewportForm" method="post">
+                                        {% for attr in form_attributes %}
+                                        <div class="viewportRow">
+                                            <label for="{{attr}}">{{attr}}:</label>
+                                            <input class='upd_input' type="text" id="{{attr}}" name="{{attr}}">
+                                        </div>
+                                        {% endfor %}
+                                         <div class="viewportRow">
+                                            <label>current Map:</label>
+                                            <select name = 'current_map' class = 'upd_input'>
+                                                    {% for m in maps %}
+                                                        <option value="{{ m['map_id'] }}">{{ m['name'] }}</option>
+                                                    {% endfor %}
+                                            </select><br>
+                                         </div>
+                                      </form>
+                                      <div class="modal-footer">
+                                          <input type="submit" class="btn btn-primary" data-bs-dismiss="modal" value="Update" id="submit_id">
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+            </tbody>
+          </table>
+        </div>
 {% endblock %}

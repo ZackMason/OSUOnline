@@ -8,7 +8,23 @@
         <input class='form_input' type="text" id="{{attr}}" name="{{attr}}">
     </div>
     {% endfor %}
-            <input type="submit" id="addButton" name="addButton" value="Add new {{title}}">
+     <div class="viewportRow">
+        <label>Item Reward:</label>
+        <select name = 'item_reward'>
+                {% for qi in q_items %}
+                    <option value="{{ qi['item_id'] }}">{{ qi['name'] }}</option>
+                {% endfor %}
+        </select><br>
+     </div>
+    <div class="viewportRow">
+        <label>Quest Giver:</label>
+        <select name = 'quest_giver'>
+                {% for qn in q_npcs %}
+                    <option value="{{ qn['npc_id'] }}">{{ qn['name'] }}</option>
+                {% endfor %}
+        </select><br>
+     </div>
+        <input type="submit" id="addButton" name="addButton" value="Add new {{title}}">
 </form>
 {% endblock %}
 
@@ -31,6 +47,7 @@
                     {% for name in attributes %}
                         <td id="{{entity.ID}}">{{entity.get(name)}}</td>
                     {% endfor %}
+
                     <td>
                         <div class='updateRowContainer'>
                             <button type="button" class="updateRow" data-bs-toggle="modal" data-bs-target="#exampleModal" id="{{entity.ID}}">^</button>
@@ -58,6 +75,22 @@
                                             <input class='upd_input' type="text" id="{{attr}}" name="{{attr}}">
                                         </div>
                                         {% endfor %}
+                                         <div class="viewportRow">
+                                            <label>Item Reward:</label>
+                                            <select name = 'item_reward' class = 'upd_input'>
+                                                    {% for qi in q_items %}
+                                                        <option value="{{ qi['item_id'] }}">{{ qi['name'] }}</option>
+                                                    {% endfor %}
+                                            </select><br>
+                                         </div>
+                                        <div class="viewportRow">
+                                            <label>Quest Giver:</label>
+                                            <select name = 'quest_giver' class = 'upd_input'>
+                                                    {% for qn in q_npcs %}
+                                                        <option value="{{ qn['npc_id'] }}">{{ qn['name'] }}</option>
+                                                    {% endfor %}
+                                            </select><br>
+                                         </div>
                                       </form>
                                       <div class="modal-footer">
                                           <input type="submit" class="btn btn-primary" data-bs-dismiss="modal" value="Update" id="submit_id">
