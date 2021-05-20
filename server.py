@@ -110,7 +110,7 @@ def get_maps():
 
 
 def get_npcs():
-    attributes = [ 'name', 'description', 'faction']
+    attributes = ['name', 'description', 'faction']
     query = "SELECT * FROM npc;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -169,8 +169,7 @@ def handle_post_request(request, table='df', attr='df', id=None):
             print(query)
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
-                    pass 
-
+                    pass
 
 @app.route('/players', methods=['GET', 'POST'])
 def players():
@@ -194,10 +193,9 @@ def quests():
 @app.route('/items', methods=['GET', 'POST'])
 def items():
     attributes, entities = get_items()
-
     handle_post_request(request, table='items', attr=attributes, id='item_id')
-
-    return render_template('table_page.html', title='Items', attributes=attributes, results=entities,
+    attributes, entities = get_items()
+    return render_template('table_page.html', title='Items', attributes=attributes, results=get_items()[1],
                            form_attributes=attributes)
 
 
@@ -205,7 +203,7 @@ def items():
 def npcs():
     attributes, entities = get_npcs()
 
-    handle_post_request(request, table='npc', attr=attributes, id='npc_id')
+    handle_post_request(request, table='table_page.html', attr=attributes, id='npc_id')
 
     return render_template('table_page.html', title='NPCs', attributes=attributes, results=entities,
                            form_attributes=attributes)
@@ -314,8 +312,7 @@ def dashboard():
 if __name__ == '__main__':
     local = bool(os.environ.get('LOCAL', True))
 
-    PORT = int(os.environ.get('PORT', 18345))
+    PORT = int(os.environ.get('PORT', 18347))
     HOST = '127.0.0.1' if local else '0.0.0.0'
-
-    # connection = connect.connect(login_name, login_pswd, login_db)
     app.run(host=HOST, port=PORT)
+
