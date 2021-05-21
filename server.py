@@ -276,7 +276,7 @@ def maps():
                            form_attributes=attributes)
 
 
-@app.route('/player_inventory')
+@app.route('/player_inventory', methods=['GET', 'POST'])
 def player_inventory():
     attributes = ['player_id', 'item_id']
     names = ['name1', 'name2']
@@ -306,11 +306,10 @@ def player_inventory():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Inventory', attributes=attributes, results=entities,
-                           list1=players, list2=items, names=names)
+    return render_template('table_page.html', title='Player Inventory', attributes=attributes, results=entities,form_attributes=attributes)
 
 
-@app.route('/player_quests')
+@app.route('/player_quests', methods=['GET', 'POST'])
 def player_quests():
     attributes = ['player_id', 'quest_id']
     names = ['name1', 'name2']
@@ -340,10 +339,10 @@ def player_quests():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities,
+    return render_template('m:m_page.html', title='Player Quests', attributes=attributes, results=entities,
                            list1=players, list2=items, names=names)
 
-@app.route('/npc_droptable')
+@app.route('/npc_droptable', methods=['GET', 'POST'])
 def npc_droptable():
     attributes = ['npc_id', 'item_id']
     names = ['name1', 'name2']
@@ -373,10 +372,10 @@ def npc_droptable():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities,
+    return render_template('m:m_page.html', title='NPC Drop Table', attributes=attributes, results=entities,
                            list1=npcs, list2=items, names=names)
 
-@app.route('/npc_spawned')
+@app.route('/npc_spawned', methods=['GET', 'POST'])
 def npc_spawned():
     attributes = ['npc_id', 'map_id']
     names = ['name1', 'name2']
@@ -406,7 +405,7 @@ def npc_spawned():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Spawned NPCs', attributes=attributes, results=entities,
+    return render_template('m:m_page.html', title='Spawned NPCs', attributes=attributes, results=entities,
                            list1=npcs, list2=maps, names=names)
 
 @app.route('/', methods=['GET', 'POST'])
