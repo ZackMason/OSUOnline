@@ -254,7 +254,7 @@ def items():
 @app.route('/npcs', methods=['GET', 'POST'])
 def npcs():
     attributes, entities = get_npcs()
-    handle_post_request(request, table='table_page.html', attr=attributes, id='npc_id')
+    handle_post_request(request, table='npc', attr=attributes, id='npc_id')
     attributes, entities = get_npcs()
     return render_template('table_page.html', title='NPCs', attributes=attributes, results=entities,
                            form_attributes=attributes)
