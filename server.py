@@ -312,14 +312,27 @@ def player_inventory():
 
 @app.route('/player_quests')
 def player_quests():
-    attributes = ['pid', 'qid']
+    attributes = ['player_id', 'quest_id']
+    names = ['name1', 'name2']
     query = "SELECT * FROM player_active_quests;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
-            results = json.dumps(cursor.fetchall())
-            res = json.loads(results)
-            entities = [{'pid': res[i]["player_id"],
-                         'qid': res[i]["quest_id"]
+            query = 'SELECT player_id, name from player;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                players = json.loads(results)
+            query = 'SELECT quest_id, name from quest;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                items = json.loads(results)
+            query = "SELECT * FROM player_active_quests;"
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+            entities = [{'player_id': res[i]["player_id"],
+                         'quest_id': res[i]["quest_id"],
+                         'name1': find_name(players, res[i]["player_id"], "player_id"),
+                         'name2': find_name(items, res[i]["quest_id"], "quest_id")
                          } for i in range(len(res))]
 
     if request.method == 'POST':
@@ -327,40 +340,32 @@ def player_quests():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities)
-
+    return render_template('player_inventory.html', title='Player Quests', attributes=attributes, results=entities,
+                           list1=players, list2=items, names=names)
 
 @app.route('/npc_droptable')
 def npc_droptable():
-    attributes = ['pid', 'ItemID']
+    attributes = ['npc_id', 'item_id']
+    names = ['name1', 'name2']
     query = "SELECT * FROM npc_drop_table;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
-            results = json.dumps(cursor.fetchall())
-            res = json.loads(results)
-            entities = [{
-                'pid': res[i]["npc_id"],
-                'ItemID': res[i]["item_id"]}
-                for i in range(len(res))]
-
-    if request.method == 'POST':
-        flash('Post request: ' + str(request.form))
-    elif request.method == 'GET':
-        pass
-
-    return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities)
-
-
-@app.route('/npc_spawned')
-def npc_spawned():
-    attributes = ['pid', 'mid']
-    query = "SELECT * FROM spawned_npc;"
-    with connect(login_name, login_pswd, login_db) as connection:
-        with execute_query(connection, query) as cursor:
-            results = json.dumps(cursor.fetchall())
-            res = json.loads(results)
-            entities = [{'pid': res[i]["npc_id"],
-                         'mid': res[i]["map_id"]
+            query = 'SELECT npc_id, name from npc;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                npcs = json.loads(results)
+            query = 'SELECT item_id, name from items;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                items = json.loads(results)
+            query = "SELECT * FROM npc_drop_table;"
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+            entities = [{'npc_id': res[i]["npc_id"],
+                         'item_id': res[i]["item_id"],
+                         'name1': find_name(npcs, res[i]["npc_id"], "npc_id"),
+                         'name2': find_name(items, res[i]["item_id"], "item_id")
                          } for i in range(len(res))]
 
     if request.method == 'POST':
@@ -368,8 +373,41 @@ def npc_spawned():
     elif request.method == 'GET':
         pass
 
-    return render_template('player_inventory.html', title='NPCs Spawned', attributes=attributes, results=entities)
+    return render_template('player_inventory.html', title='NPC Drop Table', attributes=attributes, results=entities,
+                           list1=npcs, list2=items, names=names)
 
+@app.route('/npc_spawned')
+def npc_spawned():
+    attributes = ['npc_id', 'map_id']
+    names = ['name1', 'name2']
+    query = "SELECT * FROM spawned_npc;"
+    with connect(login_name, login_pswd, login_db) as connection:
+        with execute_query(connection, query) as cursor:
+            query = 'SELECT npc_id, name from npc;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                npcs = json.loads(results)
+            query = 'SELECT map_id, name from map;'
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                maps = json.loads(results)
+            query = "SELECT * FROM spawned_npc;"
+            with execute_query(connection, query) as cursor:
+                results = json.dumps(cursor.fetchall())
+                res = json.loads(results)
+            entities = [{'npc_id': res[i]["npc_id"],
+                         'map_id': res[i]["map_id"],
+                         'name1': find_name(npcs, res[i]["npc_id"], "npc_id"),
+                         'name2': find_name(maps, res[i]["map_id"], "map_id")
+                         } for i in range(len(res))]
+
+    if request.method == 'POST':
+        flash('Post request: ' + str(request.form))
+    elif request.method == 'GET':
+        pass
+
+    return render_template('player_inventory.html', title='Spawned NPCs', attributes=attributes, results=entities,
+                           list1=npcs, list2=maps, names=names)
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
