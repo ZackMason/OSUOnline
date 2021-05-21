@@ -306,7 +306,8 @@ def player_inventory():
     elif request.method == 'GET':
         pass
 
-    return render_template('table_page.html', title='Player Inventory', attributes=attributes, results=entities,form_attributes=attributes)
+    return render_template('m:m_page.html', title='Player Inventory', attributes=attributes, results=entities,
+                           form_attributes=attributes, names=names, list1=players, list2=items)
 
 
 @app.route('/player_quests', methods=['GET', 'POST'])
@@ -323,7 +324,7 @@ def player_quests():
             query = 'SELECT quest_id, name from quest;'
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
-                items = json.loads(results)
+                quests = json.loads(results)
             query = "SELECT * FROM player_active_quests;"
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
@@ -331,7 +332,7 @@ def player_quests():
             entities = [{'player_id': res[i]["player_id"],
                          'quest_id': res[i]["quest_id"],
                          'name1': find_name(players, res[i]["player_id"], "player_id"),
-                         'name2': find_name(items, res[i]["quest_id"], "quest_id")
+                         'name2': find_name(quests, res[i]["quest_id"], "quest_id")
                          } for i in range(len(res))]
 
     if request.method == 'POST':
@@ -340,7 +341,7 @@ def player_quests():
         pass
 
     return render_template('m:m_page.html', title='Player Quests', attributes=attributes, results=entities,
-                           list1=players, list2=items, names=names)
+                           list1=players, list2=quests, names=names)
 
 @app.route('/npc_droptable', methods=['GET', 'POST'])
 def npc_droptable():
