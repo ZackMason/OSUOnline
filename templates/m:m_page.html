@@ -1,12 +1,12 @@
 {% extends 'dashboard.html' %}
 
 {% block viewport %}
-<form class="viewportForm">
+<form class="viewportForm" method="post">
     <div class="viewportRow">
         <label>{{ attributes[0] }}:</label>
         <select name = '{{ attributes[0] }}'>
                 {% for p in list1 %}
-                    <option value="{{ attributes[0] }}">{{ p['name'] }}</option>
+                    <option value="{{ p[attributes[0]] }}">{{ p['name']}} ({{ p[attributes[0]] }})</option>
                 {% endfor %}
         </select><br>
      </div>
@@ -14,7 +14,7 @@
         <label>{{ attributes[1] }}:</label>
         <select name = '{{ attributes[1] }}'>
                 {% for i in list2 %}
-                    <option value="{{ attributes[1] }}">{{ i['name'] }}</option>
+                    <option value="{{ i[attributes[1]] }}">{{ i['name'] }} ({{ i[attributes[1]] }})</option>
                 {% endfor %}
         </select><br>
      </div>
@@ -39,16 +39,16 @@
             {% for entity in results %}
                 <tr>
                     {% for name in names %}
-                        <td id="{{entity.get(name)}}">{{entity.get(name)}}</td>
+                        <td id="id">{{entity.get(name)}}</td>
                     {% endfor %}
                     <td>
                         <div class='updateRowContainer'>
-                            <button type="button" class="updateRow" data-bs-toggle="modal" data-bs-target="#exampleModal" id="{{entity.ID}}">^</button>
+                            <button type="button" class="updateRow" data-bs-toggle="modal" data-bs-target="#exampleModal" id="{{ entity[attributes[0]] }}&{{ entity[attributes[1]] }}">^</button>
                         </div>
                     </td>
                     <td>
                         <div class='deleteRowContainer'>
-                            <input type="submit" class="deleteRow" value="x">
+                            <input type="submit" class="deleteRow" value="x" id = "{{ entity[attributes[0]] }}&{{ entity[attributes[1]] }}">
                         </div>
                     </td>
                 </tr>
@@ -61,22 +61,22 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                   </div>
                                   <div class="modal-body" id ="modal_id">
-                                      <form class="viewportForm" method="post">
-                                        {% for attr in form_attributes %}
-                                        <div class="viewportRow">
-                                            <label for="{{attr}}">{{attr}}:</label>
-                                            <input class='upd_input' type="text" id="{{attr}}" name="{{attr}}">
-                                        </div>
-                                        {% endfor %}
-                                         <div class="viewportRow">
-                                            <label>current Map:</label>
-                                            <select name = 'current_map' class = 'upd_input'>
-                                                    {% for m in maps %}
-                                                        <option value="{{ m['map_id'] }}">{{ m['name'] }}</option>
+                                      <div class="viewportRow">
+                                            <label>{{ attributes[0] }}:</label>
+                                            <select name = '{{ attributes[0] }}' class = 'upd_input'>
+                                                    {% for p in list1 %}
+                                                        <option value="{{ p[attributes[0]] }}">{{ p['name']}} ({{ p[attributes[0]] }})</option>
                                                     {% endfor %}
                                             </select><br>
                                          </div>
-                                      </form>
+                                        <div class="viewportRow">
+                                            <label>{{ attributes[1] }}:</label>
+                                            <select name = '{{ attributes[1] }}' class = 'upd_input'>
+                                                    {% for i in list2 %}
+                                                        <option value="{{ i[attributes[1]] }}">{{ i['name'] }} ({{ i[attributes[1]] }})</option>
+                                                    {% endfor %}
+                                            </select><br>
+                                         </div>
                                       <div class="modal-footer">
                                           <input type="submit" class="btn btn-primary" data-bs-dismiss="modal" value="Update" id="submit_id">
                                       </div>

@@ -86,7 +86,7 @@ def get_quests():
                 'quest_giver': res[i]["quest_giver"],
             } for i in range(len(res))]
 
-            query = 'SELECT item_id, name from items;'
+            query = 'SELECT item_id, name from item;'
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
                 res = json.loads(results)
@@ -121,7 +121,7 @@ def get_quests():
 
 def get_items():
     attributes = ['name', 'description', 'quality', 'sprite']
-    query = "SELECT * FROM items;"
+    query = "SELECT * FROM item;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
             results = json.dumps(cursor.fetchall())
@@ -190,7 +190,6 @@ def handle_post_request(request, table='df', attr='df', id=None):
                 with connect(login_name, login_pswd, login_db) as connection:
                     with execute_query(connection, query) as cursor:
                         pass
-            flash('Post request %s' % str(request.form))
         elif request.form.get('query_type') == 'UPDATE':
             query = 'UPDATE %s SET %s WHERE %s=%s'
             data = json.loads(request.form.get('data'))
@@ -208,10 +207,73 @@ def handle_post_request(request, table='df', attr='df', id=None):
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
                     pass
-            flash('Update request: %s ' % str(request.form))
         elif request.form.get('query_type') == 'DELETE':
             print('delete recieved')
             query = "DELETE FROM %s WHERE %s=%s;" % (table, id, request.form.get('id'))
+            print(query)
+            with connect(login_name, login_pswd, login_db) as connection:
+                with execute_query(connection, query) as cursor:
+                    pass
+
+
+def handle_many_post_request(request, table='df', attr='df'):
+    if request.method == 'POST':
+        print('post recieved')
+        if not request.form.get('query_type'):
+            data = [request.form.get(a) for a in attr]
+            table_token = '%s %s' % (table, tuple(attr))
+            table_token = table_token.replace("'", '')
+
+            values_token = '%s' % data
+            values_token = values_token.replace("", '').replace('[', '(').replace(']', ')')
+            if '' in data:
+                print('empty field')
+            else:
+                query = "INSERT INTO %s VALUES %s;" % (table_token, values_token)
+                with connect(login_name, login_pswd, login_db) as connection:
+                    with execute_query(connection, query) as cursor:
+                        pass
+        elif request.form.get('query_type') == 'UPDATE':
+            query = 'UPDATE %s SET %s WHERE %s'
+            data = json.loads(request.form.get('data'))
+            ids = request.form.get('id').split("&")
+            set_query = ''
+            first = True
+            for key, val in data.items():
+                if val == '': continue
+                if val is None: continue
+                if not first:
+                    set_query += ', '
+                set_query += "%s='%s'" % (key, val)
+                first = False
+
+            where_query = ''
+            first = True
+            index = 0
+            for key, val in data.items():
+                if not first:
+                    where_query += ' AND '
+                where_query += "%s.%s= %s" % (table, key, ids[index])
+                index += 1
+                first = False
+
+            query = query % (table, set_query, where_query)
+            with connect(login_name, login_pswd, login_db) as connection:
+                with execute_query(connection, query) as cursor:
+                    pass
+        elif request.form.get('query_type') == 'DELETE':
+            print('delete recieved')
+            ids = request.form.get('id').split("&")
+            where_query = ''
+            first = True
+            index = 0
+            for key in attr:
+                if not first:
+                    where_query += ' AND '
+                where_query += "%s.%s= %s" % (table, key, ids[index])
+                index += 1
+                first = False
+            query = "DELETE FROM %s WHERE %s;" % (table, where_query)
             print(query)
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
@@ -252,7 +314,7 @@ def quests():
 @app.route('/items', methods=['GET', 'POST'])
 def items():
     attributes, entities = get_items()
-    handle_post_request(request, table='items', attr=attributes, id='item_id')
+    handle_post_request(request, table='item', attr=attributes, id='item_id')
     attributes, entities = get_items()
     return render_template('table_page.html', title='Items', attributes=attributes, results=get_items()[1],
                            form_attributes=attributes)
@@ -280,17 +342,20 @@ def maps():
 def player_inventory():
     attributes = ['player_id', 'item_id']
     names = ['name1', 'name2']
+
+    handle_many_post_request(request, table="player_inventory", attr=attributes)
+
     query = "SELECT * FROM player_inventory;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
             query = 'SELECT player_id, name from player;'
             with execute_query(connection, query) as cursor:
-                    results = json.dumps(cursor.fetchall())
-                    players = json.loads(results)
-            query = 'SELECT item_id, name from items;'
+                results = json.dumps(cursor.fetchall())
+                players = json.loads(results)
+            query = 'SELECT item_id, name from item;'
             with execute_query(connection, query) as cursor:
-                    results = json.dumps(cursor.fetchall())
-                    items = json.loads(results)
+                results = json.dumps(cursor.fetchall())
+                items = json.loads(results)
             query = "SELECT * FROM player_inventory;"
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
@@ -301,11 +366,6 @@ def player_inventory():
                          'name2': find_name(items, res[i]["item_id"], "item_id")
                          } for i in range(len(res))]
 
-    if request.method == 'POST':
-        pass
-    elif request.method == 'GET':
-        pass
-
     return render_template('m:m_page.html', title='Player Inventory', attributes=attributes, results=entities,
                            form_attributes=attributes, names=names, list1=players, list2=items)
 
@@ -314,6 +374,9 @@ def player_inventory():
 def player_quests():
     attributes = ['player_id', 'quest_id']
     names = ['name1', 'name2']
+
+    handle_many_post_request(request, table="player_active_quests", attr=attributes)
+
     query = "SELECT * FROM player_active_quests;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -335,18 +398,17 @@ def player_quests():
                          'name2': find_name(quests, res[i]["quest_id"], "quest_id")
                          } for i in range(len(res))]
 
-    if request.method == 'POST':
-        flash('Post request: ' + str(request.form))
-    elif request.method == 'GET':
-        pass
-
     return render_template('m:m_page.html', title='Player Quests', attributes=attributes, results=entities,
                            list1=players, list2=quests, names=names)
+
 
 @app.route('/npc_droptable', methods=['GET', 'POST'])
 def npc_droptable():
     attributes = ['npc_id', 'item_id']
     names = ['name1', 'name2']
+
+    handle_many_post_request(request, table="npc_drop_table", attr=attributes)
+
     query = "SELECT * FROM npc_drop_table;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -354,7 +416,7 @@ def npc_droptable():
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
                 npcs = json.loads(results)
-            query = 'SELECT item_id, name from items;'
+            query = 'SELECT item_id, name from item;'
             with execute_query(connection, query) as cursor:
                 results = json.dumps(cursor.fetchall())
                 items = json.loads(results)
@@ -368,18 +430,17 @@ def npc_droptable():
                          'name2': find_name(items, res[i]["item_id"], "item_id")
                          } for i in range(len(res))]
 
-    if request.method == 'POST':
-        flash('Post request: ' + str(request.form))
-    elif request.method == 'GET':
-        pass
-
     return render_template('m:m_page.html', title='NPC Drop Table', attributes=attributes, results=entities,
                            list1=npcs, list2=items, names=names)
+
 
 @app.route('/npc_spawned', methods=['GET', 'POST'])
 def npc_spawned():
     attributes = ['npc_id', 'map_id']
     names = ['name1', 'name2']
+
+    handle_many_post_request(request, table="spawned_npc", attr=attributes)
+
     query = "SELECT * FROM spawned_npc;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -401,13 +462,9 @@ def npc_spawned():
                          'name2': find_name(maps, res[i]["map_id"], "map_id")
                          } for i in range(len(res))]
 
-    if request.method == 'POST':
-        flash('Post request: ' + str(request.form))
-    elif request.method == 'GET':
-        pass
-
     return render_template('m:m_page.html', title='Spawned NPCs', attributes=attributes, results=entities,
                            list1=npcs, list2=maps, names=names)
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
@@ -421,6 +478,6 @@ def dashboard():
 if __name__ == '__main__':
     local = bool(os.environ.get('LOCAL', True))
 
-    PORT = int(os.environ.get('PORT', 18347))
+    PORT = int(os.environ.get('PORT', 18350))
     HOST = '127.0.0.1' if local else '0.0.0.0'
     app.run(host=HOST, port=PORT)
