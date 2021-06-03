@@ -28,16 +28,17 @@ login_db = str(os.environ.get('DATABASE', 'login_again'))
 
 
 def get_entities():
-    attributes = ['ID', 'name', 'description']
+    attributes = ['player_id', 'name', 'email', 'level']
     query = "SELECT * FROM player;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
             results = json.dumps(cursor.fetchall())
             res = json.loads(results)
             entities = [{
-                'ID': res[i]["player_id"],
+                'player_id': res[i]["player_id"],
                 'name': res[i]["name"],
-                'description': res[i]["email"],
+                'email': res[i]["email"],
+                'level': res[i]["level"],
             } for i in range(len(res))]
             return attributes, entities
 
@@ -137,7 +138,7 @@ def get_items():
 
 
 def get_maps():
-    attributes = ['name', 'map_sprite']
+    attributes = ['name', 'sprite']
     query = "SELECT * FROM map;"
     with connect(login_name, login_pswd, login_db) as connection:
         with execute_query(connection, query) as cursor:
@@ -278,6 +279,26 @@ def handle_many_post_request(request, table='df', attr='df'):
             with connect(login_name, login_pswd, login_db) as connection:
                 with execute_query(connection, query) as cursor:
                     pass
+
+
+def handle_order_by_request(request):
+    attributes = ['player_id', 'name', 'email', 'level']
+    query = "SELECT p1.* FROM player AS p1 " \
+            "LEFT JOIN (SELECT * FROM player GROUP BY player.player_id) " \
+            "as p2 ON p1.player_id = p2.player_id " \
+            "order by p1.%s;" % (request.form.get('type'))
+    print(query)
+    with connect(login_name, login_pswd, login_db) as connection:
+        with execute_query(connection, query) as cursor:
+            results = json.dumps(cursor.fetchall())
+            res = json.loads(results)
+            entities = [{
+                'player_id': res[i]["player_id"],
+                'name': res[i]["name"],
+                'email': res[i]["email"],
+                'level': res[i]["level"],
+            } for i in range(len(res))]
+        return attributes, entities
 
 
 def find_name(list, id, id_name):
@@ -471,13 +492,16 @@ def npc_spawned():
 @app.route('/homepage', methods=['GET', 'POST'])
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    attributes, entities = get_entities()
-    return render_template('dashboard.html', attributes=attributes, results=entities)
+    if request.method == 'POST' and request.form.get('type'):
+        attributes, entities = handle_order_by_request(request)
+    else:
+        attributes, entities = get_entities()
+    return render_template('homepage.html', attributes=attributes, results=entities)
 
 
 if __name__ == '__main__':
     local = bool(os.environ.get('LOCAL', True))
 
-    PORT = int(os.environ.get('PORT', 18350))
+    PORT = int(os.environ.get('PORT', 18300))
     HOST = '127.0.0.1' if local else '0.0.0.0'
     app.run(host=HOST, port=PORT)
